@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Focus Guard — Enable Camera</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #080810;
+      color: #f1f1f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #0f0f1a;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 40px 32px;
+      max-width: 440px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.6);
+    }
+    .icon { font-size: 56px; margin-bottom: 12px; }
+    h2   { color: #818CF8; margin: 0 0 12px; font-size: 22px; font-weight: 700; }
+    p    { color: #9B9BB4; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+    code {
+      background: rgba(255,255,255,0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .info-box {
+      text-align: left;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      padding: 14px 18px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      line-height: 1.9;
+      color: #D1D5DB;
+    }
+    .btn {
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.5);
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .btn:hover   { background: #4F46E5; transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .status      { margin-top: 16px; font-size: 13px; color: #6B7280; min-height: 20px; }
+    .status.ok   { color: #10B981; font-weight: 600; }
+    .status.err  { color: #EF4444; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="icon">📷</div>
+    <h2>Enable Camera Access</h2>
+    <p>Click the button below. Chrome will ask for camera access at the top of your browser — click <strong>Allow</strong>.</p>
+    <button class="btn" id="requestBtn">Allow Camera Access</button>
+    <div class="status" id="statusMsg"></div>
+  </div>
+  <!-- External script — required by Chrome MV3 CSP (no inline scripts allowed) -->
+  <script src="permission.js"></script>
+</body>
+</html>
