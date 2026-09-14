@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Study Focus Guard — AI-powered distraction detection for deep focus sessions" />
+  <title>Study Focus Guard</title>
+  <script type="module" src="/src/main.js"></script>
+  <link rel="stylesheet" href="/sidepanel.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════ -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-icon" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="url(#logoGrad)" stroke-width="2"/>
+          <path d="M12 6v6l4 2" stroke="url(#logoGrad)" stroke-width="2" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#818CF8"/>
+              <stop offset="1" stop-color="#34D399"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="header-text">
+        <span class="app-name">Study Focus Guard</span>
+      </div>
+    </div>
+    <div class="session-timer-wrap">
+      <span class="timer-label">SESSION</span>
+      <span id="sessionTimer" class="session-timer">00:00:00</span>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       STATUS CARD
+  ═══════════════════════════════════════════ -->
+  <section class="status-card" id="statusCard" aria-live="polite">
+    <div class="status-badge-row">
+      <div class="status-dot" id="statusDot" aria-hidden="true"></div>
+      <span class="status-label" id="statusLabel">Ready to Start</span>
+    </div>
+
+    <!-- Countdown display -->
+    <div class="countdown-wrap" id="countdownWrap" style="display:none">
+      <div class="countdown-text" id="countdownText">Distracted: 0.0s / 5.0s</div>
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-glow" id="progressGlow"></div>
+      </div>
+    </div>
+
+    <!-- Detection tags -->
+    <div class="detection-tags" id="detectionTags"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       CAMERA PREVIEW
+  ═══════════════════════════════════════════ -->
+  <section class="camera-section">
+    <div class="camera-header">
+      <span class="section-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        Camera Feed
+      </span>
+      <button id="toggleVideoBtn" class="icon-btn" title="Toggle camera preview" aria-label="Toggle camera preview">
+        <svg id="videoIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="camera-container" id="cameraContainer">
+      <video id="webcamVideo" autoplay muted playsinline
+             disablePictureInPicture disableRemotePlayback
+             x-webkit-airplay="deny"
+             aria-label="Webcam feed"></video>
+      <canvas id="overlayCanvas" aria-hidden="true"></canvas>
+      <!-- Startup overlay -->
+      <div class="camera-overlay" id="cameraOverlay">
+        <div class="camera-placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5">
+            <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+          </svg>
+          <span>Start session to activate camera</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SESSION CONTROLS
+  ═══════════════════════════════════════════ -->
+  <section class="controls-card">
+    <div class="control-buttons">
+      <button id="startBtn" class="btn btn-primary" aria-label="Start study session">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Start
+      </button>
+      <button id="pauseBtn" class="btn btn-secondary" disabled aria-label="Pause study session">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        Pause
+      </button>
+      <button id="resetBtn" class="btn btn-ghost" aria-label="Reset study session">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+        </svg>
+        Reset
+      </button>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SETTINGS PANEL
+  ═══════════════════════════════════════════ -->
+  <section class="settings-card">
+    <div class="settings-header" id="settingsToggle" role="button" tabindex="0" aria-expanded="true" aria-controls="settingsBody">
+      <span class="section-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+        </svg>
+        Settings
+      </span>
+      <svg class="chevron" id="settingsChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <div class="settings-body" id="settingsBody">
+
+      <!-- Alarm Threshold -->
+      <div class="setting-row">
+        <div class="setting-label-row">
+          <label for="alarmSlider" class="setting-label">Alarm Delay</label>
+          <span class="setting-value" id="alarmValue">5.0s</span>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="alarmSlider" class="slider" min="2" max="15" step="0.5" value="5" aria-label="Alarm trigger delay in seconds" />
+          <div class="slider-track-labels">
+            <span>2s</span><span>15s</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recovery Threshold -->
+      <div class="setting-row">
+        <div class="setting-label-row">
+          <label for="recoverySlider" class="setting-label">Focus Recovery</label>
+          <span class="setting-value" id="recoveryValue">1.5s</span>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="recoverySlider" class="slider" min="1" max="5" step="0.5" value="1.5" aria-label="Focus recovery time in seconds" />
+          <div class="slider-track-labels">
+            <span>1s</span><span>5s</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toggles row -->
+      <div class="toggles-row">
+        <div class="toggle-item">
+          <label class="toggle-label" for="muteToggle">Mute Alarm</label>
+          <button id="muteToggle" class="toggle-btn" role="switch" aria-checked="false" aria-label="Mute alarm">
+            <span class="toggle-knob"></span>
+          </button>
+        </div>
+        <div class="toggle-item">
+          <label class="toggle-label" for="videoToggle">Hide Camera</label>
+          <button id="videoToggle" class="toggle-btn" role="switch" aria-checked="false" aria-label="Hide camera preview">
+            <span class="toggle-knob"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Custom Alarm Sound -->
+      <div class="setting-row">
+        <div class="setting-label-row">
+          <label class="setting-label">Alarm Sound</label>
+          <span class="setting-value" id="soundModeLabel">TTS Voice</span>
+        </div>
+        <div class="sound-picker-row">
+          <button id="selectSoundBtn" class="btn-sound-pick" title="Choose audio file from your computer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            Choose File
+          </button>
+          <span class="sound-file-name" id="soundFileName">No file chosen</span>
+          <button id="previewSoundBtn" class="btn-sound-icon" title="Preview alarm sound" disabled>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button id="clearSoundBtn" class="btn-sound-icon btn-sound-clear" title="Remove custom sound, revert to TTS" disabled>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <input type="file" id="soundFileInput" accept="audio/*" style="display:none" aria-label="Select custom alarm audio file">
+        </div>
+      </div>
+
+    </div><!-- /settings-body -->
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       STATS FOOTER
+  ═══════════════════════════════════════════ -->
+  <footer class="stats-footer">
+    <div class="stat-item">
+      <span class="stat-val" id="statFocused">0:00</span>
+      <span class="stat-lbl">Focused</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-val" id="statDistracted">0:00</span>
+      <span class="stat-lbl">Distracted</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-val" id="statAlerts">0</span>
+      <span class="stat-lbl">Alerts</span>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════
+       MODEL LOADING OVERLAY
+  ═══════════════════════════════════════════ -->
+  <div class="loading-overlay" id="loadingOverlay" role="status" aria-live="assertive">
+    <div class="loading-content">
+      <div class="spinner" id="loadingSpinner"></div>
+      <p class="loading-title" id="loadingTitle">Loading AI Models…</p>
+      <p class="loading-sub" id="loadingSub">Initializing TensorFlow.js & MediaPipe</p>
+      <div class="loading-progress-track" id="loadingProgressTrack">
+        <div class="loading-progress-fill" id="loadingProgressFill" style="width:0%"></div>
+      </div>
+      <button id="retryBtn" class="btn btn-primary" style="display:none; margin-top:12px;">Retry Loading</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       CAMERA PERMISSION OVERLAY
+  ═══════════════════════════════════════════ -->
+  <div class="loading-overlay hidden" id="permissionOverlay" role="dialog" aria-labelledby="permTitle">
+    <div class="loading-content" style="max-width: 280px;">
+      <div style="font-size: 36px; margin-bottom: 4px;">📷</div>
+      <p class="loading-title" id="permTitle">Camera Access Needed</p>
+      <p class="loading-sub" style="margin-bottom: 16px; line-height: 1.4;">
+        Chrome requires a one-time camera permission grant in a browser tab.
+      </p>
+      <button id="grantPermBtn" class="btn btn-primary" style="width: 100%; justify-content: center;">
+        🔓 Grant Camera Access
+      </button>
+      <button id="cancelPermBtn" class="btn btn-ghost" style="width: 100%; justify-content: center; margin-top: 6px;">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <!-- Error toast -->
+  <div class="toast" id="errorToast" role="alert" aria-live="assertive" style="display:none"></div>
+
+</body>
+</html>
