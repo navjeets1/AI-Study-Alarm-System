@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Study Focus Guard",
+  "version": "1.0.0",
+  "description": "AI-powered distraction detection for focused studying. Alerts you when you look away or pick up your phone.",
+
+  "permissions": ["sidePanel", "storage", "tabs", "tts"],
+
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  },
+
+  "side_panel": {
+    "default_path": "dist/sidepanel.html"
+  },
+
+  "action": {
+    "default_title": "Open Study Focus Guard"
+  },
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "dist/*",
+        "dist/wasm/*",
+        "dist/models/*",
+        "dist/models/coco-ssd/*",
+        "dist/assets/*",
+        "icons/*",
+        "permission.html",
+        "permission.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

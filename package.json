@@ -1,0 +1,39 @@
+{
+  "name": "study-focus-guard",
+  "version": "1.0.0",
+  "description": "Privacy-first Chrome Side Panel extension using on-device ML (TensorFlow.js & MediaPipe) for study distraction tracking, 3D gaze estimation, phone detection, and custom audio alarm alerts.",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "chrome-extension",
+    "manifest-v3",
+    "side-panel",
+    "tensorflow-js",
+    "mediapipe",
+    "computer-vision",
+    "face-landmarker",
+    "coco-ssd",
+    "study-guard",
+    "productivity",
+    "focus-timer",
+    "distraction-tracker",
+    "privacy-first"
+  ],
+  "scripts": {
+    "setup": "node scripts/download-models.mjs",
+    "build": "vite build",
+    "build:full": "npm run setup && npm run build",
+    "dev": "vite build --watch"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.14",
+    "@tensorflow-models/coco-ssd": "^2.2.3",
+    "@tensorflow/tfjs": "^4.20.0",
+    "@tensorflow/tfjs-backend-cpu": "^4.22.0",
+    "@tensorflow/tfjs-backend-webgl": "^4.20.0"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0",
+    "vite-plugin-static-copy": "^1.0.5"
+  }
+}
